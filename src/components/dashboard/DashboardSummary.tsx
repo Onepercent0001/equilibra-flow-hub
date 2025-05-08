@@ -5,7 +5,7 @@ import { ArrowUp, ArrowDown, WalletIcon, ChartBarIcon } from 'lucide-react';
 
 const DashboardSummary = () => {
   return (
-    <div className="dashboard-stats">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card className="card-hover">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">Saldo Atual</CardTitle>

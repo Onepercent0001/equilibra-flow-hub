@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 
 const WhatsAppIntegration = () => {
   const { toast } = useToast();
   const [n8nUrl, setN8nUrl] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [isConnected, setIsConnected] = useState(false);
 
   const handleConnect = (e: React.FormEvent) => {
@@ -27,8 +29,8 @@ const WhatsAppIntegration = () => {
     // Simulating a successful connection
     setIsConnected(true);
     toast({
-      title: "Conexão estabelecida!",
-      description: "Sua integração com WhatsApp via n8n foi configurada com sucesso.",
+      title: "Configuração salva!",
+      description: "As configurações de integração com WhatsApp foram salvas com sucesso.",
     });
   };
 
@@ -39,28 +41,42 @@ const WhatsAppIntegration = () => {
           <div>
             <CardTitle className="text-2xl">Integração com WhatsApp</CardTitle>
             <CardDescription>
-              Configure a integração com WhatsApp para gerenciar suas finanças através de mensagens
+              Configure a integração com WhatsApp para interação via mensagem de texto
             </CardDescription>
           </div>
           {isConnected && (
             <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-              Conectado
+              Configurado
             </Badge>
           )}
         </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="setup">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="setup">Configuração</TabsTrigger>
             <TabsTrigger value="commands">Comandos</TabsTrigger>
-            <TabsTrigger value="api">API</TabsTrigger>
+            <TabsTrigger value="endpoints">Endpoints</TabsTrigger>
+            <TabsTrigger value="help">Ajuda</TabsTrigger>
           </TabsList>
           <TabsContent value="setup" className="space-y-4 py-4">
             <form onSubmit={handleConnect}>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="n8nUrl" className="text-sm font-medium">URL do n8n</label>
+                  <label htmlFor="whatsappNumber" className="text-sm font-medium">Número do WhatsApp</label>
+                  <Input 
+                    id="whatsappNumber" 
+                    placeholder="+55 (11) 99999-9999" 
+                    value={whatsappNumber} 
+                    onChange={(e) => setWhatsappNumber(e.target.value)} 
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Número de WhatsApp que será usado para enviar e receber mensagens
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="n8nUrl" className="text-sm font-medium">URL do webhook n8n</label>
                   <Input 
                     id="n8nUrl" 
                     placeholder="https://seu-servidor-n8n.com/webhook/..." 
@@ -68,7 +84,7 @@ const WhatsAppIntegration = () => {
                     onChange={(e) => setN8nUrl(e.target.value)} 
                   />
                   <p className="text-xs text-muted-foreground">
-                    URL do seu webhook n8n que irá receber as mensagens do WhatsApp
+                    URL do webhook n8n que irá processar as mensagens do WhatsApp
                   </p>
                 </div>
                 
@@ -87,7 +103,7 @@ const WhatsAppIntegration = () => {
                 </div>
 
                 <Button type="submit" className="w-full">
-                  {isConnected ? 'Reconectar' : 'Conectar'}
+                  {isConnected ? 'Atualizar Configuração' : 'Salvar Configuração'}
                 </Button>
               </div>
             </form>
@@ -96,100 +112,119 @@ const WhatsAppIntegration = () => {
           <TabsContent value="commands" className="py-4">
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Estes são os comandos disponíveis para interagir com o Equilibra via WhatsApp:
+                Comandos disponíveis para interagir com o Equilibra via WhatsApp:
               </p>
               
               <div className="border rounded-md divide-y">
-                <div className="p-3 flex justify-between">
+                <div className="p-3 flex justify-between items-center">
                   <code className="bg-muted p-1 rounded text-sm">#saldo</code>
                   <span className="text-sm text-muted-foreground">Consulta seu saldo atual</span>
                 </div>
-                <div className="p-3 flex justify-between">
-                  <code className="bg-muted p-1 rounded text-sm">#nova [valor] [categoria] [descrição]</code>
-                  <span className="text-sm text-muted-foreground">Registra uma nova despesa</span>
+                <div className="p-3 flex justify-between items-center">
+                  <code className="bg-muted p-1 rounded text-sm">#gastei [valor] [categoria] [descrição]</code>
+                  <span className="text-sm text-muted-foreground">Registra uma despesa</span>
                 </div>
-                <div className="p-3 flex justify-between">
-                  <code className="bg-muted p-1 rounded text-sm">#receita [valor] [categoria] [descrição]</code>
-                  <span className="text-sm text-muted-foreground">Registra uma nova receita</span>
+                <div className="p-3 flex justify-between items-center">
+                  <code className="bg-muted p-1 rounded text-sm">#recebi [valor] [categoria] [descrição]</code>
+                  <span className="text-sm text-muted-foreground">Registra uma receita</span>
                 </div>
-                <div className="p-3 flex justify-between">
+                <div className="p-3 flex justify-between items-center">
                   <code className="bg-muted p-1 rounded text-sm">#metas</code>
                   <span className="text-sm text-muted-foreground">Lista suas metas financeiras</span>
                 </div>
-                <div className="p-3 flex justify-between">
-                  <code className="bg-muted p-1 rounded text-sm">#relatório [mês]</code>
+                <div className="p-3 flex justify-between items-center">
+                  <code className="bg-muted p-1 rounded text-sm">#relatorio [mês]</code>
                   <span className="text-sm text-muted-foreground">Gera um relatório mensal</span>
+                </div>
+                <div className="p-3 flex justify-between items-center">
+                  <code className="bg-muted p-1 rounded text-sm">#lembrete [data] [descrição]</code>
+                  <span className="text-sm text-muted-foreground">Cria um novo lembrete</span>
+                </div>
+                <div className="p-3 flex justify-between items-center">
+                  <code className="bg-muted p-1 rounded text-sm">#ajuda</code>
+                  <span className="text-sm text-muted-foreground">Lista todos os comandos disponíveis</span>
                 </div>
               </div>
             </div>
           </TabsContent>
           
-          <TabsContent value="api" className="py-4">
+          <TabsContent value="endpoints" className="py-4">
             <div className="space-y-4">
-              <p className="text-sm">
-                Abaixo estão os principais endpoints disponíveis para integração com o n8n:
+              <p className="text-sm mb-4">
+                Endpoints REST para integração com n8n:
               </p>
               
-              <div className="border rounded-md overflow-hidden">
-                <div className="bg-muted p-3 border-b">
-                  <span className="font-medium">GET</span> <code className="text-sm">/api/v1/transactions</code>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm">Retorna a lista de transações do usuário</p>
-                  <div className="mt-2">
-                    <Badge variant="outline" className="text-xs">Requer autenticação</Badge>
-                  </div>
-                </div>
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Método</TableHead>
+                    <TableHead>Endpoint</TableHead>
+                    <TableHead>Descrição</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">POST</TableCell>
+                    <TableCell>/api/whatsapp/transaction</TableCell>
+                    <TableCell>Processar mensagem de transação</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">GET</TableCell>
+                    <TableCell>/api/whatsapp/balance</TableCell>
+                    <TableCell>Consultar saldo atual</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">GET</TableCell>
+                    <TableCell>/api/whatsapp/goals</TableCell>
+                    <TableCell>Consultar metas financeiras</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">POST</TableCell>
+                    <TableCell>/api/whatsapp/reminder</TableCell>
+                    <TableCell>Criar/disparar lembrete</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">GET</TableCell>
+                    <TableCell>/api/whatsapp/help</TableCell>
+                    <TableCell>Obter comandos disponíveis</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
               
-              <div className="border rounded-md overflow-hidden">
-                <div className="bg-muted p-3 border-b">
-                  <span className="font-medium">POST</span> <code className="text-sm">/api/v1/transactions</code>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm">Cria uma nova transação</p>
-                  <div className="mt-2 space-x-2">
-                    <Badge variant="outline" className="text-xs">Requer autenticação</Badge>
-                    <Badge variant="outline" className="text-xs">JSON</Badge>
-                  </div>
-                </div>
+              <div className="mt-4 p-4 bg-muted rounded-md">
+                <h4 className="font-medium mb-2">Exemplo de Payload para Transação:</h4>
+                <pre className="text-xs overflow-auto p-2 bg-background rounded">
+{`{
+  "message": "Gastei 150 reais no mercado",
+  "user_id": "user123"
+}
+`}
+                </pre>
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="help" className="py-4">
+            <div className="space-y-4">
+              <p className="text-sm">
+                O assistente no WhatsApp do Equilibra permite que você:
+              </p>
               
-              <div className="border rounded-md overflow-hidden">
-                <div className="bg-muted p-3 border-b">
-                  <span className="font-medium">GET</span> <code className="text-sm">/api/v1/accounts/balance</code>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm">Consulta o saldo atual das contas</p>
-                  <div className="mt-2">
-                    <Badge variant="outline" className="text-xs">Requer autenticação</Badge>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border rounded-md overflow-hidden">
-                <div className="bg-muted p-3 border-b">
-                  <span className="font-medium">GET</span> <code className="text-sm">/api/v1/goals</code>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm">Lista as metas financeiras</p>
-                  <div className="mt-2">
-                    <Badge variant="outline" className="text-xs">Requer autenticação</Badge>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border rounded-md overflow-hidden">
-                <div className="bg-muted p-3 border-b">
-                  <span className="font-medium">POST</span> <code className="text-sm">/api/v1/webhook/whatsapp</code>
-                </div>
-                <div className="p-3">
-                  <p className="text-sm">Endpoint para receber mensagens do WhatsApp</p>
-                  <div className="mt-2 space-x-2">
-                    <Badge variant="outline" className="text-xs">Requer API Key</Badge>
-                    <Badge variant="outline" className="text-xs">Webhook</Badge>
-                  </div>
-                </div>
+              <ul className="list-disc pl-5 space-y-2 text-sm">
+                <li>Registre transações enviando mensagens simples (ex: "Gastei 150 reais no mercado")</li>
+                <li>Consulte seu saldo atual, metas e histórico financeiro</li>
+                <li>Receba lembretes automáticos de vencimentos e pagamentos</li>
+                <li>Obtenha relatórios financeiros via mensagem</li>
+              </ul>
+
+              <div className="p-4 bg-muted rounded-md mt-4">
+                <h4 className="font-medium mb-2">Como funciona:</h4>
+                <ol className="list-decimal pl-5 space-y-2 text-sm">
+                  <li>Configure o número de WhatsApp e o webhook do n8n nas configurações</li>
+                  <li>No n8n, crie um fluxo que utilize os endpoints da API Equilibra</li>
+                  <li>Conecte o webhook às ações apropriadas (processamento de mensagens, consultas, etc.)</li>
+                  <li>Teste enviando uma mensagem para o número configurado</li>
+                </ol>
               </div>
             </div>
           </TabsContent>
@@ -197,12 +232,7 @@ const WhatsAppIntegration = () => {
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
         <div className="text-sm text-muted-foreground">
-          <p>Para configurar a integração com o WhatsApp você precisará:</p>
-          <ol className="list-decimal pl-4 mt-1 space-y-1">
-            <li>Criar um fluxo no n8n para conectar o WhatsApp</li>
-            <li>Configurar os webhooks para receber e enviar mensagens</li>
-            <li>Definir a chave de API para segurança</li>
-          </ol>
+          <p>Observação: O número de WhatsApp é gerenciado pelo administrador do sistema. Os usuários apenas interagem com o número configurado, sem precisarem fazer configurações adicionais.</p>
         </div>
       </CardFooter>
     </Card>
