@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ArrowUp, ArrowDown, WalletIcon, ChartIcon } from 'lucide-react';
+import { ArrowUp, ArrowDown, WalletIcon, ChartBarIcon } from 'lucide-react';
 
 const DashboardSummary = () => {
   return (
@@ -58,7 +58,7 @@ const DashboardSummary = () => {
         <CardContent>
           <div className="flex items-center justify-between">
             <span className="text-2xl font-bold">2/4</span>
-            <ChartIcon className="h-5 w-5 text-equilibra-accent" />
+            <ChartBarIcon className="h-5 w-5 text-equilibra-accent" />
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             <span className="text-equilibra-accent">50%</span> das metas completadas
