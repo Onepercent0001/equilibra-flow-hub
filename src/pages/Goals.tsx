@@ -11,8 +11,16 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Plus, ArrowUp, CalendarIcon } from 'lucide-react';
+import { 
+  Plus, 
+  ArrowUp, 
+  CalendarIcon, 
+  HelpCircle, 
+  Target, 
+  TrendingUp 
+} from 'lucide-react';
 import GoalDialog from '@/components/goals/GoalDialog';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 // Mock data para demonstração
 const mockGoals = [
@@ -102,14 +110,23 @@ const Goals = () => {
     return 'bg-green-500';
   };
 
+  const calculateMonthlyTarget = (current: number, target: number, deadline: string) => {
+    const daysRemaining = calculateDaysRemaining(deadline);
+    const monthsRemaining = Math.ceil(daysRemaining / 30);
+    const amountNeeded = target - current;
+    
+    if (monthsRemaining <= 0 || amountNeeded <= 0) return 0;
+    return Math.ceil(amountNeeded / monthsRemaining);
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Metas Financeiras</h1>
             <p className="text-muted-foreground mt-2">
-              Defina e acompanhe objetivos financeiros
+              Defina e acompanhe objetivos financeiros para realizar seus sonhos
             </p>
           </div>
           <Button onClick={() => setIsDialogOpen(true)}>
@@ -117,34 +134,91 @@ const Goals = () => {
           </Button>
         </div>
         
+        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
+          <div className="flex items-start space-x-3">
+            <Target className="h-6 w-6 text-primary mt-0.5" />
+            <div>
+              <h3 className="font-medium text-lg">Como funcionam as metas?</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Metas ajudam você a planejar e economizar para objetivos importantes. 
+                Defina um valor alvo, prazo e acompanhe seu progresso adicionando depósitos regularmente.
+                O sistema calcula quanto você deve economizar mensalmente para atingir sua meta no prazo.
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {mockGoals.map((goal) => {
             const progress = calculateProgress(goal.current, goal.target);
             const daysRemaining = calculateDaysRemaining(goal.deadline);
+            const monthlyTarget = calculateMonthlyTarget(goal.current, goal.target, goal.deadline);
+            const progressColor = getProgressColor(progress);
             
             return (
-              <Card key={goal.id} className="card-hover">
+              <Card key={goal.id} className="overflow-hidden">
+                <div className={`h-1 ${progressColor} w-full`}></div>
                 <CardHeader className="pb-2">
-                  <CardTitle>{goal.name}</CardTitle>
-                  <CardDescription>{goal.category}</CardDescription>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>{goal.name}</CardTitle>
+                      <CardDescription className="flex items-center mt-1">
+                        <span className="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded-full">
+                          {goal.category}
+                        </span>
+                      </CardDescription>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <HelpCircle className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="w-80 p-4">
+                        <div className="space-y-2">
+                          <h4 className="font-medium">Sobre esta meta</h4>
+                          <p className="text-sm">
+                            Para atingir {formatCurrency(goal.target)} até {formatDate(goal.deadline)},
+                            você precisa economizar aproximadamente {formatCurrency(monthlyTarget)} por mês.
+                          </p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-muted-foreground">
-                      {formatCurrency(goal.current)} de {formatCurrency(goal.target)}
-                    </span>
-                    <span className="text-sm font-medium">{progress}%</span>
-                  </div>
-                  <Progress value={progress} className={`h-2 ${getProgressColor(progress)}`} />
-                  
-                  <div className="flex justify-between text-sm">
-                    <div className="flex items-center space-x-1">
-                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Prazo: {formatDate(goal.deadline)}</span>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-muted-foreground">
+                        {formatCurrency(goal.current)} de {formatCurrency(goal.target)}
+                      </span>
+                      <span className="text-sm font-medium">{progress}%</span>
                     </div>
-                    <span className="text-muted-foreground">
-                      {daysRemaining} dias restantes
-                    </span>
+                    <Progress value={progress} className={`h-2 ${progressColor}`} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-1">
+                      <div className="flex items-center text-muted-foreground">
+                        <CalendarIcon className="h-3.5 w-3.5 mr-1 opacity-70" />
+                        <span>Prazo</span>
+                      </div>
+                      <p className="font-medium">{formatDate(goal.deadline)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {daysRemaining} dias restantes
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center text-muted-foreground">
+                        <TrendingUp className="h-3.5 w-3.5 mr-1 opacity-70" />
+                        <span>Meta mensal</span>
+                      </div>
+                      <p className="font-medium">{formatCurrency(monthlyTarget)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        para atingir no prazo
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
                 <CardFooter>
