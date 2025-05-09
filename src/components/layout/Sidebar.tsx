@@ -7,8 +7,6 @@ import {
   WalletIcon, 
   ListIcon, 
   Settings, 
-  Users,
-  Calendar,
   FileText 
 } from 'lucide-react';
 
@@ -19,8 +17,6 @@ const navItems = [
   { name: 'Metas', href: '/goals', icon: ChartIcon },
   { name: 'Contas', href: '/accounts', icon: WalletIcon },
   { name: 'Relatórios', href: '/reports', icon: FileText },
-  { name: 'Calendário', href: '/calendar', icon: Calendar },
-  { name: 'Integrações', href: '/integrations', icon: Users },
   { name: 'Configurações', href: '/settings', icon: Settings },
 ];
 
@@ -60,17 +56,14 @@ const Sidebar = () => {
       <div className="p-4 border-t">
         <div className="bg-gray-50 p-3 rounded-md">
           <div className="flex items-center gap-2 mb-2">
-            <span className="h-6 w-6 rounded-full bg-gradient-finance flex items-center justify-center text-white text-xs">WA</span>
             <div className="text-sm">
-              <p className="font-medium">WhatsApp</p>
+              <p className="font-medium">Dica do dia</p>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Configure a integração com WhatsApp para gerenciar finanças via mensagem.</p>
-          <Link to="/integrations/whatsapp">
-            <Button variant="outline" size="sm" className="mt-2 w-full text-xs">
-              Configurar
-            </Button>
-          </Link>
+          <p className="text-xs text-muted-foreground">Categorizar suas despesas ajuda a identificar padrões e oportunidades para economizar.</p>
+          <Button variant="outline" size="sm" className="mt-2 w-full text-xs">
+            Saiba mais
+          </Button>
         </div>
       </div>
     </aside>

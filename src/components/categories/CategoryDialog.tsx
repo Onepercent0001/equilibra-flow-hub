@@ -99,6 +99,7 @@ const CategoryDialog = ({ open, onOpenChange, category }: CategoryDialogProps) =
                 <SelectContent>
                   <SelectItem value="income">Receita</SelectItem>
                   <SelectItem value="expense">Despesa</SelectItem>
+                  <SelectItem value="fixed">Custo Fixo</SelectItem>
                 </SelectContent>
               </Select>
             </div>

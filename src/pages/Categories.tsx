@@ -26,7 +26,7 @@ const mockCategories = [
   {
     id: '2',
     name: 'Moradia',
-    type: 'expense',
+    type: 'fixed',
     color: '#3b82f6',
     transactionCount: 12,
   },
@@ -40,7 +40,7 @@ const mockCategories = [
   {
     id: '4',
     name: 'Saúde',
-    type: 'expense',
+    type: 'fixed',
     color: '#f97316',
     transactionCount: 15,
   },
@@ -91,6 +91,18 @@ const Categories = () => {
     setEditingCategory(null);
   };
 
+  // Função para determinar a cor e texto da badge baseado no tipo da categoria
+  const getCategoryBadge = (type: string) => {
+    switch(type) {
+      case 'income':
+        return { variant: 'secondary' as const, label: 'Receita' };
+      case 'fixed':
+        return { variant: 'outline' as const, label: 'Custo Fixo' };
+      default:
+        return { variant: 'destructive' as const, label: 'Despesa' };
+    }
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -98,7 +110,7 @@ const Categories = () => {
           <div>
             <h1 className="text-3xl font-bold">Categorias</h1>
             <p className="text-muted-foreground mt-2">
-              Gerencie suas categorias de receitas e despesas
+              Gerencie suas categorias de receitas, despesas e custos fixos
             </p>
           </div>
           <Button onClick={() => setIsDialogOpen(true)}>
@@ -123,38 +135,41 @@ const Categories = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredCategories.map((category) => (
-                <div
-                  key={category.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <div>
-                      <p className="font-medium">{category.name}</p>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant={category.type === 'income' ? 'secondary' : 'destructive'}>
-                          {category.type === 'income' ? 'Receita' : 'Despesa'}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {category.transactionCount} transações
-                        </span>
+              {filteredCategories.map((category) => {
+                const badge = getCategoryBadge(category.type);
+                return (
+                  <div
+                    key={category.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <div>
+                        <p className="font-medium">{category.name}</p>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant={badge.variant}>
+                            {badge.label}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {category.transactionCount} transações
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             {filteredCategories.length === 0 && (
