@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', href: '/', icon: ChartIcon },
+  { name: 'Dashboard', href: '/dashboard', icon: ChartIcon },
   { name: 'Transações', href: '/transactions', icon: WalletIcon },
   { name: 'Categorias', href: '/categories', icon: ListIcon },
   { name: 'Metas', href: '/goals', icon: ChartIcon },
@@ -26,7 +26,7 @@ const Sidebar = () => {
   return (
     <aside className="h-screen w-64 hidden md:flex flex-col bg-white border-r border-border/40">
       <div className="p-6">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/dashboard" className="flex items-center gap-2">
           <span className="h-8 w-8 rounded-full bg-gradient-finance flex items-center justify-center text-white font-bold">E</span>
           <span className="font-bold text-xl gradient-text">Equilibra</span>
         </Link>
