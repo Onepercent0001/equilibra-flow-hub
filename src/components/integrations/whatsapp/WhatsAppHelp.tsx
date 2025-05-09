@@ -24,6 +24,17 @@ const WhatsAppHelp = () => {
           <li>Teste enviando uma mensagem para o número configurado</li>
         </ol>
       </div>
+      
+      <div className="p-4 bg-muted rounded-md mt-4">
+        <h4 className="font-medium mb-2">Endpoints disponíveis:</h4>
+        <ul className="list-disc pl-5 space-y-2 text-sm">
+          <li><strong>POST /api/whatsapp/transaction</strong> - Registrar uma nova transação via texto</li>
+          <li><strong>GET /api/whatsapp/balance</strong> - Consultar saldo atual</li>
+          <li><strong>GET /api/whatsapp/goals</strong> - Listar metas ativas</li>
+          <li><strong>GET /api/whatsapp/transactions</strong> - Histórico de transações recentes</li>
+          <li><strong>POST /api/whatsapp/reminder</strong> - Criar ou disparar lembretes</li>
+        </ul>
+      </div>
     </div>
   );
 };
