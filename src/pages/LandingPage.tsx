@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
   ArrowRight,
   BarChart3,
@@ -10,6 +11,8 @@ import {
   PiggyBank,
   Shield,
   Target,
+  Check,
+  Star,
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -125,6 +128,102 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Pricing Plans Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Escolha o plano ideal para você</h2>
+            <p className="text-muted-foreground max-w-3xl mx-auto">
+              Oferecemos diferentes opções para atender às suas necessidades financeiras.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Plano Básico */}
+            <div className="bg-card border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">Plano Básico</h3>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">Gratuito</span>
+                </div>
+                <p className="text-muted-foreground mb-6">Perfeito para quem está começando a organizar suas finanças.</p>
+                
+                <Separator className="my-6" />
+                
+                <ul className="space-y-3 mb-6">
+                  <PlanFeature text="Controle de transações básicas" />
+                  <PlanFeature text="Até 5 categorias personalizadas" />
+                  <PlanFeature text="1 conta bancária" />
+                  <PlanFeature text="Dashboard simplificado" />
+                  <PlanFeature text="Metas financeiras básicas" />
+                </ul>
+                <Link to="/register">
+                  <Button className="w-full" variant="outline">Começar Grátis</Button>
+                </Link>
+              </div>
+            </div>
+            
+            {/* Plano Pro */}
+            <div className="bg-card border border-primary rounded-xl shadow-md overflow-hidden relative">
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
+                Mais Popular
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">Plano Pro</h3>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">R$19,90</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
+                <p className="text-muted-foreground mb-6">Recursos avançados para um controle financeiro completo.</p>
+                
+                <Separator className="my-6" />
+                
+                <ul className="space-y-3 mb-6">
+                  <PlanFeature text="Tudo do plano Básico" />
+                  <PlanFeature text="Categorias ilimitadas" />
+                  <PlanFeature text="Até 10 contas bancárias" />
+                  <PlanFeature text="Relatórios avançados" />
+                  <PlanFeature text="Planejamento orçamentário" />
+                  <PlanFeature text="Metas financeiras avançadas" />
+                  <PlanFeature text="Sincronização entre dispositivos" />
+                </ul>
+                <Link to="/register">
+                  <Button className="w-full">Assinar Agora</Button>
+                </Link>
+              </div>
+            </div>
+            
+            {/* Plano Premium */}
+            <div className="bg-card border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">Plano Premium</h3>
+                <div className="mb-4">
+                  <span className="text-3xl font-bold">R$39,90</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
+                <p className="text-muted-foreground mb-6">Experiência completa para investidores e famílias.</p>
+                
+                <Separator className="my-6" />
+                
+                <ul className="space-y-3 mb-6">
+                  <PlanFeature text="Tudo do plano Pro" />
+                  <PlanFeature text="Contas bancárias ilimitadas" />
+                  <PlanFeature text="Gestão familiar compartilhada" />
+                  <PlanFeature text="Integração com WhatsApp" />
+                  <PlanFeature text="Análise de investimentos" />
+                  <PlanFeature text="Consultoria financeira" />
+                  <PlanFeature text="Suporte prioritário" />
+                  <PlanFeature text="Backup automático" />
+                </ul>
+                <Link to="/register">
+                  <Button className="w-full" variant="outline">Assinar Premium</Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="max-w-3xl mx-auto px-4 md:px-8 text-center">
@@ -175,6 +274,16 @@ const FeatureCard = ({ icon, title, description }) => {
       <h3 className="text-xl font-medium mb-2">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
     </div>
+  );
+};
+
+// Plan Feature Component
+const PlanFeature = ({ text }) => {
+  return (
+    <li className="flex items-start">
+      <Check className="h-5 w-5 text-primary mr-2 shrink-0" />
+      <span className="text-sm">{text}</span>
+    </li>
   );
 };
 
