@@ -1,112 +1,110 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import { ArrowLeft } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email('Email inválido'),
+});
+
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 const ForgotPassword = () => {
   const { toast } = useToast();
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const [loading, setLoading] = React.useState(false);
+
+  const form = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: '',
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log('Forgot password form submitted:', data);
-    
-    // Simulação de envio de e-mail de recuperação
-    toast({
-      title: 'E-mail enviado',
-      description: 'Instruções para recuperação de senha foram enviadas para seu e-mail.',
-    });
-    
-    setIsSubmitted(true);
+  const onSubmit = async (values: ForgotPasswordFormValues) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast({
+          title: 'Erro ao enviar email de recuperação',
+          description: error.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      toast({
+        title: 'Email de recuperação enviado',
+        description: 'Verifique sua caixa de entrada para redefinir sua senha.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro inesperado',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-equilibra-background p-4">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-primary">Equilibra</h1>
-        <p className="text-muted-foreground">Seu assistente financeiro pessoal</p>
-      </div>
-      
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Recuperar senha</CardTitle>
-          <CardDescription className="text-center">
-            {!isSubmitted 
-              ? "Digite seu e-mail e enviaremos instruções para redefinir sua senha"
-              : "Verifique seu e-mail para instruções de recuperação"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!isSubmitted ? (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="seu@email.com"
-                  {...register('email', { 
-                    required: 'E-mail é obrigatório',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'E-mail inválido',
-                    },
-                  })}
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-equilibra-primary/10 to-equilibra-secondary/10 p-4">
+      <div className="w-full max-w-md">
+        <Card className="border-equilibra-primary/20">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Recuperar senha</CardTitle>
+            <CardDescription className="text-center">
+              Informe seu email para receber instruções de recuperação de senha
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="seu@email.com" type="email" {...field} disabled={loading} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message as string}</p>
-                )}
-              </div>
-              
-              <Button type="submit" className="w-full">
-                Enviar instruções
-              </Button>
-            </form>
-          ) : (
-            <div className="text-center space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Um e-mail com instruções para redefinir sua senha foi enviado para o endereço fornecido.
-                Por favor, verifique sua caixa de entrada e siga as instruções.
-              </p>
-              
-              <Button 
-                onClick={() => setIsSubmitted(false)} 
-                variant="outline" 
-                className="w-full"
-              >
-                Tentar novamente
-              </Button>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Enviando..." : "Enviar instruções"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-2">
+            <div className="text-center text-sm">
+              Lembrou sua senha?{' '}
+              <Link to="/login" className="text-equilibra-primary hover:underline">
+                Voltar ao login
+              </Link>
             </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex flex-col">
-          <div className="text-sm text-center text-muted-foreground">
-            <Link to="/login" className="flex items-center justify-center gap-1 text-primary hover:underline">
-              <ArrowLeft className="h-4 w-4" />
-              Voltar para o login
-            </Link>
-          </div>
-        </CardFooter>
-      </Card>
+            <div className="text-center text-sm">
+              <Link to="/" className="text-gray-500 hover:underline">
+                Voltar para a página inicial
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
-};
-
-export default ForgotPassword;
